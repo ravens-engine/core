@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es5",
+        "jsx": "react",
+        "sourceMap": true,
+        "strictNullChecks": true,
+        "allowJs": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "downlevelIteration": true,
+        "outDir": "./lib",
+        "declaration": true
+    },
+    "exclude": [
+        "node_modules",
+        "docs",
+        "jest.config.js",
+        "**/webpack.config.js",
+        "lib"
+    ]
+}
