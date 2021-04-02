@@ -62,7 +62,7 @@ ___
 
 ### transportLayer
 
-• **transportLayer**: [*ServerTransportLayer*](servertransportlayer.md)
+• **transportLayer**: *ServerTransportLayer*
 
 ## Methods
 

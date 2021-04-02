@@ -24,4 +24,4 @@ ___
 
 ### transportLayer
 
-• **transportLayer**: [*ClientTransportLayer*](../classes/clienttransportlayer.md)
+• **transportLayer**: *ClientTransportLayer*

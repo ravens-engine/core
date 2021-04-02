@@ -41,7 +41,7 @@ export default class TicTacToe extends Game {
 
 The first thing we need to define is the initial state of our game. In this example, it will be an empty 3-by-3 grid, represented by a two-dimensional array in Javascript. To achieve this, we define the `initialize` method of `Game`:
 
-```javascript
+```javascript {2-12}
 export default class TicTacToe extends Game {
   initialize() {
     const emptyGrid = [
@@ -63,7 +63,7 @@ The state of the game must be a pure Javascript object to allow Ravens to easily
 
 :::
 
-We're going to add some other elements to the state of our game: the id of the player that last filled a cell in the grid. This will allow later, when defining actions, to properly check that a player does not try to fill twice the grid in a row.
+We're going to add an other element to our state: which symbol's turn it is.
 
 ```javascript {11}
 export default class TicTacToe extends Game {
@@ -76,7 +76,7 @@ export default class TicTacToe extends Game {
 
     this.state = {
       grid: emptyGrid,
-      lastSymbolFilled: null
+      turn: "O"
     }
   }
 }
@@ -99,7 +99,7 @@ export default class TicTacToe extends Game {
 This method receives two arguments:
 
 * `playerId` is a string and corresponds to the id of the player that performed the action.
-* `action` is a Javacript object containing a description of the action performed. As the developper, we can choose the structure of this object. For this tutorial, we'll assume that an action has the following form:
+* `action` is a Javacript object containing a description of the action performed. We can choose the structure of this object. For this tutorial, we'll assume that an action has the following form:
   ```json
   {
     type: "fill",
@@ -117,35 +117,35 @@ To handle the action of type `fill`, we can implement the logic in the method `p
 processAction(playerId, action) {
   if (action.type == "fill") {
     // Fill the grid with the new value
-    // Determine which symbol should fill the cell
-    const symbol = this.state.lastSymbolFilled == "X" ? "O" : "X";
-    this.state.grid[action.cell.y][action.cell.x] = symbol;
+    this.state.grid[action.cell.y][action.cell.x] = this.state.turn;
 
-    // Store the symbol that was used to fill the cell
-    this.state.lastSymbolFilled = symbol;
+    // Change which symbol's turn it is
+    this.state.turn = this.state.turn == "O" ? "X" : "O";
   }
 }
 ```
 
 #### Handling Invalid actions
 
-For now, our `processAction` accept any move sent by the players, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an error whenever `processAction` encounters an invalid move
+For now, our `processAction` method accepts any move sent by the players, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an `InvalidActionError` whenever `processAction` encounters an invalid move:
 
-```javascript {3-7}
+```javascript {7-10}
+import { Game, InvalidActionError } from "@ravens-engine/core";
+
+// ...
+
 processAction(playerId, action) {
   if (action.type == "fill") {
     // Check if the cell has alrady been filled
     if (this.state.grid[action.cell.y][action.cell.x] != null) {
-      throw new Error("Invalid move: cell already filled");
+      throw new InvalidActionError("Invalid move: cell already filled");
     }
 
     // Fill the grid with the new value
-    // Determine which symbol should fill the cell
-    const symbol = this.state.lastSymbolFilled == "X" ? "O" : "X";
-    this.state.grid[action.cell.y][action.cell.x] = symbol;
+    this.state.grid[action.cell.y][action.cell.x] = this.state.turn;
 
-    // Store the symbol that was used to fill the cell
-    this.state.lastSymbolFilled = symbol;
+    // Change which symbol's turn it is
+    this.state.turn = this.state.turn == "O" ? "X" : "O";
   }
 }
 ```
@@ -178,11 +178,9 @@ export default class TicTacTocComponent extends React.Component {
       tableRows.push(<th>{row}</th>);
     }
 
-    // Compute this is the turn of which symbol to play
-    const symbolTurn = 
-
     return (
       <div style="display: flex; align-items: center">
+        <div>{this.props.game.state.turn}</div>
         <table>
           {tableRows}
         </table>

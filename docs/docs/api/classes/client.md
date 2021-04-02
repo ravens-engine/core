@@ -38,24 +38,6 @@ Name | Type |
 
 ## Properties
 
-### config
-
-• **config**: [*ClientConfig*](../interfaces/clientconfig.md)<Game\>
-
-___
-
-### onStateChange
-
-• **onStateChange**: () => *void*
-
-#### Type declaration:
-
-▸ (): *void*
-
-**Returns:** *void*
-
-___
-
 ### playerId
 
 • **playerId**: *string*= "1"
@@ -68,11 +50,7 @@ ___
 
 • **state**: [*ClientState*](../enums/clientstate.md)
 
-___
-
-### transportLayer
-
-• **transportLayer**: [*ClientTransportLayer*](clienttransportlayer.md)
+**`readonly`** 
 
 ## Accessors
 

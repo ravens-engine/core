@@ -13,16 +13,12 @@ module.exports = [
     "label": "Classes",
     "items": [
       "api/classes/client",
-      "api/classes/clientsockettransportlayer",
-      "api/classes/clienttransportlayer",
       "api/classes/core",
       "api/classes/game",
       "api/classes/gamecomponent",
       "api/classes/invalidactionerror",
       "api/classes/phase",
-      "api/classes/server",
-      "api/classes/serversockettransportlayer",
-      "api/classes/servertransportlayer"
+      "api/classes/server"
     ]
   },
   {

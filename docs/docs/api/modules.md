@@ -18,16 +18,12 @@ hide_title: true
 ### Classes
 
 - [Client](classes/client.md)
-- [ClientSocketTransportLayer](classes/clientsockettransportlayer.md)
-- [ClientTransportLayer](classes/clienttransportlayer.md)
 - [Core](classes/core.md)
 - [Game](classes/game.md)
 - [GameComponent](classes/gamecomponent.md)
 - [InvalidActionError](classes/invalidactionerror.md)
 - [Phase](classes/phase.md)
 - [Server](classes/server.md)
-- [ServerSocketTransportLayer](classes/serversockettransportlayer.md)
-- [ServerTransportLayer](classes/servertransportlayer.md)
 
 ### Interfaces
 
