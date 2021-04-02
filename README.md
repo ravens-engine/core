@@ -4,7 +4,7 @@ A Javascript library for building multiplayer turn-based games
 
 ## Documentation
 
-You can find the Ravens documentation on [ravens.dev](ravens.dev).
+You can find the Ravens documentation on [ravens.dev](https://ravens.dev).
 
 ## Development
 
