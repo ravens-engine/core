@@ -6,7 +6,8 @@ export * from "./client-transport-layer/ClientSocketTransportLayer";
 export * from "./core/Core";
 export * from "./core/Game";
 export * from "./core/Phase";
-export * from "./core/InvalidActionError";
+export * from "./core/errors/InvalidActionError";
+export * from "./core/errors/InvalidStatusError";
 
 export * from "./server/Server";
 export * from "./server/ServerMessage";

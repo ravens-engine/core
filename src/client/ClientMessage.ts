@@ -1,15 +1,15 @@
-import { AnyGame } from "../core/Phase";
+export type ClientMessage = SendAction | Authenticate;
 
-export type ClientMessage<Game extends AnyGame> = SendAction<Game> | Authenticate;
-
-interface SendAction<Game extends AnyGame> {
+interface SendAction<> {
     type: "send-action",
     action: object,
 }
 
 interface Authenticate {
     type: "authenticate",
-    playerId: string,
-    gameId: string,
-    token: string,
+    authenticationData: {
+        userId: string,
+        authToken: string,
+        matchId: string
+    }
 }

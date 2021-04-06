@@ -1,15 +1,26 @@
+import { SerializedCore } from "../core/Core";
 import { AnyGame } from "../core/Phase";
-import { SerializedPhase } from "../core/SerializedPhase";
 
-export type ServerMessage<Game extends AnyGame> = ApplyAction<Game> | Sync<Game>;
+export type ServerMessage<Game extends AnyGame> = ApplyAction<Game> | Sync<Game>
+    | UserConnection | UserDisconnection;
 
 interface ApplyAction<Game extends AnyGame> {
     type: "apply-action",
-    playerId: string,
-    action: object
+    userId: string,
+    action: object,
 }
 
 interface Sync<Game extends AnyGame> {
     type: "sync",
-    serializedRootPhase: SerializedPhase<Game>
+    serializedCore: SerializedCore<Game>
+}
+
+interface UserConnection {
+    type: "user-connection",
+    userId: string
+}
+
+interface UserDisconnection {
+    type: "user-disconnection",
+    userId: string
 }

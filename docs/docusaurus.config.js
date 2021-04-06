@@ -21,13 +21,13 @@ module.exports = {
       },
       items: [
         {
-          to: 'tutorial/',
-          label: 'Tutorial',
+          to: 'docs/',
+          label: 'Docs',
           position: 'left',
         },
         {
-          to: 'docs/',
-          label: 'Docs',
+          to: 'tutorial/',
+          label: 'Tutorial',
           position: 'left',
         },
         {
@@ -36,6 +36,10 @@ module.exports = {
           position: 'right',
         },
       ],
+    },
+    algolia: {
+      apiKey: 'YOUR_API_KEY',
+      indexName: 'YOUR_INDEX_NAME',
     },
     // Even though the website doesn't have a footer, we must have a footer
     // object, otherwise Docusaurus complains.
@@ -66,16 +70,6 @@ module.exports = {
         path: 'tutorial',
         routeBasePath: 'tutorial',
       },
-    ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        entryPoints: ['../src/index.ts'],
-        tsconfig: '../tsconfig.json',
-        excludePrivate: true,
-        excludeInternal: true,
-        disableSources: true
-      }
     ]
   ],
 };

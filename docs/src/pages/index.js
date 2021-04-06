@@ -43,16 +43,24 @@ function Home() {
       noFooter={true}>
       <header className={clsx(styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
+          <h1 className="hero__title">{siteConfig.title} <span className="badge badge--warning">beta</span></h1>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link
               className={clsx(
-                'button button--outline button--secondary button--lg',
+                'button button--secondary button--lg',
                 styles.getStarted,
               )}
               to={useBaseUrl('docs/')}>
               Get Started
+            </Link>
+            <div style={{width: "24px"}} />
+            <Link
+              className={clsx(
+                'button button--outline button--secondary button--lg',
+              )}
+              to={useBaseUrl('tutorial/')}>
+              Tutorial
             </Link>
           </div>
         </div>

@@ -1,41 +1,129 @@
 import _ from "lodash";
+import * as winston from "winston";
+import { InvalidStatusError } from "./errors/InvalidStatusError";
+import { PlayerAlreadyInGameError } from "./errors/PlayerAlreadyInGameError";
+import { PlayerNotInGameError } from "./errors/PlayerNotInGameError";
+import { GameStatus } from "./GameStatus";
 import { Phase, AnyPhase, PhaseClass, AnyGame } from "./Phase";
+import { SerializedGame } from "./SerializedGame";
 import { SerializedPhase } from "./SerializedPhase";
 
 export class Core<Game extends AnyGame> {
+    id: string;
+    name: string;
+
     gameClass: PhaseClass<Game>;
     game: Game;
+    logger: winston.Logger;
+
+    status: GameStatus;
+    players: string[];
 
     onStateChange: () => void;
 
-    constructor(gameClass: PhaseClass<Game>, serializedRootPhase: SerializedPhase<Game> | null = null) {
+    constructor(
+        id: string,
+        name: string,
+        gameClass: PhaseClass<Game>,
+        logger: winston.Logger | null = null,
+        serializedGame: SerializedGame<Game> | null = null,
+        status: GameStatus = GameStatus.IN_LOBBY,
+        players: string[] = []
+    ) {
+        this.id = id;
+        this.name = name;
         this.gameClass = gameClass;
+        this.logger = logger ? logger : winston.createLogger();
+        this.players = players;
+        this.status = status;
 
-        if (serializedRootPhase == null) {
-            this.game = new gameClass(null);
+        if (serializedGame == null) {
+            this.game = new gameClass(this, null);
+        } else {
+            // @ts-expect-error serializedGame acting weirdly
+            this.game = this.deserializePhase(null, this.gameClass, serializedGame);
+        }
+
+
+        if (serializedGame == null) {
             this.game.initialize(null);
         } else {
-            this.game = this.deserializePhase(null, this.gameClass, serializedRootPhase);
-
-            // Once done, call onDeserialize on each phase
             this.callRecursivelyOnGame(phase => phase.onDeserialize());
         }
     }
 
-    public serializeRootPhase(): SerializedPhase<Game> {
-        return this.serializePhase(this.game);
+    fireUserConnectionEvent(userId: string): void {
+        this.callRecursivelyOnGame(phase => phase.onUserConnection(userId));
     }
 
-    applyAction(playerId: string, action: object): void {
-        this.callRecursivelyOnGame(phase => phase.applyAction(playerId, action));
+    fireUserDisconnectionEvent(userId: string): void {
+        this.callRecursivelyOnGame(phase => phase.onUserDisconnection(userId));
+    }
 
-        if (this.onStateChange) {
-            this.onStateChange();
+    public serializeCore(): SerializedCore<Game> {
+        // Serialiazing a game is serializing the root phase,
+        // adding some data and removing the unecessary "id" property
+        // of the game.
+        const serializedCore: SerializedCore<Game> = {
+            id: this.id,
+            name: this.name,
+            serializedGame: _.omit(this.serializePhase(this.game), "id"),
+            status: this.status,
+            players: this.players,
+        };
+
+        return serializedCore;
+    }
+
+    setStatus(status: GameStatus): void {
+        // Check if the new status respects the status flow
+        const currentStatus = this.status;
+        let invalidNewStatus = false;
+        if (currentStatus == GameStatus.IN_LOBBY) {
+            if (status != GameStatus.CLOSED && status != GameStatus.STARTED) {
+                invalidNewStatus = true;
+            }
+        } else if (currentStatus == GameStatus.STARTED) {
+            if (status != GameStatus.CANCELLED && status != GameStatus.FINISHED) {
+                invalidNewStatus = true;
+            }
+        } else {
+            invalidNewStatus = true;
         }
+
+        if (invalidNewStatus) {
+            throw new InvalidStatusError(`Invalid status given, can't switch from "${this.status}" to "${status}"`);
+        }
+
+        this.status = status;
+    }
+
+    addPlayer(userId: string): void {
+        if (this.players.indexOf(userId) != -1) {
+            throw new PlayerAlreadyInGameError(`Player "${userId}" is already a player`);
+        }
+
+        this.players.push(userId);
+    }
+
+    removePlayer(userId: string): void {
+        if (this.players.indexOf(userId) == -1) {
+            throw new PlayerNotInGameError(`Tried to remove player "${userId}", who is not a player`);
+        }
+
+        this.players = _.without(this.players, userId);
+    }
+
+    applyAction(userId: string, action: object): void {
+        this.callRecursivelyOnGame(phase => phase.applyAction(userId, action));
     }
 
     private callRecursivelyOnGame(callback: (phase: AnyPhase) => void) {
         this.callRecursivelyOnPhase(this.game, callback);
+
+        if (this.onStateChange) {
+            this.onStateChange();
+        }
     }
 
     private callRecursivelyOnPhase(phase: AnyPhase, callback: (phase: AnyPhase) => void ) {
@@ -56,7 +144,7 @@ export class Core<Game extends AnyGame> {
 
         const serializedPhase: SerializedPhase<Phase> = {
             id: id,
-            state: phase.state
+            state: _.cloneDeep(phase.state)
         };
 
         if (phase.child) {
@@ -67,7 +155,7 @@ export class Core<Game extends AnyGame> {
     }
 
     private deserializePhase<Phase extends AnyPhase>(parent: AnyPhase | null, phaseClass: PhaseClass<Phase>, serializedPhase: SerializedPhase<Phase>): Phase {
-        const phase = new phaseClass(parent);
+        const phase = new phaseClass(this, parent);
         phase.state = serializedPhase.state;
 
         if (serializedPhase.child) {
@@ -87,4 +175,24 @@ export class Core<Game extends AnyGame> {
 
         return phase;
     }
+
+    static deserializeCore<Game extends AnyGame>(gameClass: PhaseClass<Game>, logger: winston.Logger | null = null, serializedCore: SerializedCore<Game>): Core<Game> {
+        return new Core(
+            serializedCore.id,
+            serializedCore.name,
+            gameClass,
+            logger,
+            serializedCore.serializedGame,
+            serializedCore.status,
+            serializedCore.players,
+        );
+    }
+}
+
+export interface SerializedCore<Game extends AnyGame> {
+    id: string,
+    name: string,
+    serializedGame: SerializedGame<Game>;
+    status: GameStatus;
+    players: string[];
 }

@@ -1,8 +1,5 @@
 import { ClientTransportLayer } from "./ClientTransportLayer";
 
-/**
- * @internal
- */
 export class ClientSocketTransportLayer extends ClientTransportLayer {
     websocket: WebSocket;
     address: string;
@@ -18,6 +15,10 @@ export class ClientSocketTransportLayer extends ClientTransportLayer {
         this.websocket.onopen = () => this.onOpen();
         this.websocket.onclose = () => this.onClose();
         this.websocket.onmessage = (data: MessageEvent) => this.privateOnMessage(data);
+    }
+
+    close(): void {
+        this.websocket.close();
     }
 
     onOpen(): void {

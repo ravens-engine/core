@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, ReactNode } from "react";
 import * as React from "react";
 import { Client, ClientState } from "../client/Client";
 import { ClientSocketTransportLayer } from "../client-transport-layer/ClientSocketTransportLayer";
@@ -10,7 +10,7 @@ export interface RootComponentProps<Game extends AnyGame> {
 }
 
 interface RavensGameComponentProps<Game extends AnyGame> {
-    rootPhaseClass: PhaseClass<Game>,
+    gameClass: PhaseClass<Game>,
     rootComponent: React.ComponentClass<RootComponentProps<Game>>
 }
 
@@ -27,7 +27,7 @@ export class GameComponent<Game extends AnyGame> extends Component<RavensGameCom
         };
     }
 
-    render() {
+    render(): ReactNode {
         return this.state.client && (
             <div>
                 {this.state.client.state == ClientState.CONNECTING ? (
@@ -43,11 +43,14 @@ export class GameComponent<Game extends AnyGame> extends Component<RavensGameCom
         );
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         const client = new Client({
-            rootPhaseClass: this.props.rootPhaseClass,
+            gameClass: this.props.gameClass,
             transportLayer: new ClientSocketTransportLayer("ws://localhost:8081")
         });
+
+        // @ts-expect-error To add a property to the browser console
+        window["client"] = client;
 
         client.onStateChange = () => {
             this.forceUpdate();

@@ -22,9 +22,9 @@ Create a file `src/TicTacToe.js`. Inside it, we'll use Ravens to create our game
 
 In Ravens, a game is defined by 2 concepts:
 
-* The state of the game, which contains all the information. Ravens takes care of synchronizing this state across all the players, so they can display it in their browser.  
+* The state of the game, which contains all the information. Ravens takes care of synchronizing this state across all the users, so they can display it in their browser.  
   In the case of Tic-Tac-Toe, this is the grid, with the `X` and the `O` inside it.  
-* The actions that a player can do on the state of the games. When a player wants to do an action, it sends it to the server where it is validated, and broadcasted to all the connected players so they can update their state of the game.     
+* The actions that a user can do on the state of the games. When a user wants to do an action, it sends it to the server where it is validated, and broadcasted to all the connected users so they can update their state of the game.     
   In the case of Tic-Tac-Toe, there is only one: fill the grid with a symbol.
 
 ### Initialization
@@ -84,13 +84,13 @@ export default class TicTacToe extends Game {
 
 ### Defining the actions
 
-Now that the state of our game is correctly initialized, we can define the actions that players can do. To handle them, we define the `processAction` method of `Game`:
+Now that the state of our game is correctly initialized, we can define the actions that users can do. To handle them, we define the `processAction` method of `Game`:
 
 ```javascript {4-6}
 export default class TicTacToe extends Game {
   // ...
 
-  processAction(playerId, action) {
+  processAction(userId, action) {
 
   }
 }
@@ -98,7 +98,7 @@ export default class TicTacToe extends Game {
 
 This method receives two arguments:
 
-* `playerId` is a string and corresponds to the id of the player that performed the action.
+* `userId` is a string and corresponds to the id of the user that performed the action.
 * `action` is a Javacript object containing a description of the action performed. We can choose the structure of this object. For this tutorial, we'll assume that an action has the following form:
   ```json
   {
@@ -109,12 +109,12 @@ This method receives two arguments:
     }
   }
   ```
-  In this case, this action would corresponds to a player trying to fill the cell at coordinates `1, 2`.
+  In this case, this action would corresponds to a user trying to fill the cell at coordinates `1, 2`.
 
 To handle the action of type `fill`, we can implement the logic in the method `processAction`:
 
 ```javascript
-processAction(playerId, action) {
+processAction(userId, action) {
   if (action.type == "fill") {
     // Fill the grid with the new value
     this.state.grid[action.cell.y][action.cell.x] = this.state.turn;
@@ -127,14 +127,14 @@ processAction(playerId, action) {
 
 #### Handling Invalid actions
 
-For now, our `processAction` method accepts any move sent by the players, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an `InvalidActionError` whenever `processAction` encounters an invalid move:
+For now, our `processAction` method accepts any move sent by the users, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an `InvalidActionError` whenever `processAction` encounters an invalid move:
 
 ```javascript {7-10}
 import { Game, InvalidActionError } from "@ravens-engine/core";
 
 // ...
 
-processAction(playerId, action) {
+processAction(userId, action) {
   if (action.type == "fill") {
     // Check if the cell has alrady been filled
     if (this.state.grid[action.cell.y][action.cell.x] != null) {
@@ -150,7 +150,7 @@ processAction(playerId, action) {
 }
 ```
 
-## Making the UI
+### Making the UI
 
 :::info
 
@@ -162,7 +162,13 @@ Now that the logic has been implemented, we can work on the UI of our game. We'l
 
 Conceptually, designing an UI for a turn-based game is a simple task: we simply need to describe what the screen should look like, based on the state of the game that we have defined in the previous section.
 
-Let's create a file `src/TicTacToeComponent.jsx`:
+First, let's install the libraries that we will use:
+
+```
+npm install react react-dom parcel-bundler
+```
+
+Let's create a file `src/TicTacToeComponent.jsx`, and fill the `render` function with an UI for our game:
 
 ```jsx
 export default class TicTacTocComponent extends React.Component {
@@ -189,3 +195,171 @@ export default class TicTacTocComponent extends React.Component {
   }
 }
 ```
+
+## Launching the game
+
+To be able to start a game server and a client, let's create 3 files that will be the starting point of those 2 processes:
+
+First, an `index.html`:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div id="root"></div>
+    <script src="./src/client.jsx"></script>
+</body>
+</html>
+```
+
+Then, `src/client.jsx`:
+
+```jsx
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { GameComponent } from "@ravens-engine/core";
+import TicTacToeGame from "./TicTacToeGame";
+import TicTacToeComponent from "./TicTacToeComponent";
+
+ReactDOM.render(
+    <GameComponent gameClass={TicTacToeGame} rootComponent={TicTacToeComponent} />,
+    document.getElementById("root")
+);
+```
+
+Finally, `src/server.js`:
+
+```js
+import { Server } from "@ravens-engine/core";
+import TicTacToeGame from "./TicTacToeGame";
+
+const server = new Server({
+    gameClass: TicTacToeGame
+});
+
+server.start();
+```
+
+If you followed all the instructions of the tutorial, you should have those files in your project folder:
+
+```
+tic-tac-toe/
+├── index.html
+├── package.json
+├── src/
+│   ├── client.jsx
+│   ├── server.js
+│   ├── TicTacToeComponent.jsx
+│   └── TicTacToeGame.js
+└── node_modules/
+    └── ...
+```
+
+To launch the game server, run in a terminal:
+
+```sh
+node ./src/server.js
+```
+
+To launch the UI, run in an other terminal:
+
+```sh
+parcel index.html
+```
+
+You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the 
+
+## Making it multiplayer
+
+At the moment, our game is a bit barebone:
+
+* There's not concept of players yet as you can play the full game inside a single browser. We'll improve that by making the game truly multiplayer.
+* When a player wins the game, there's no message indicating who's the winner.
+
+### Separating into phases
+
+The first modification we'll be doing is separating our game into 3 phases:
+
+* The `Lobby` phase, where the server will wait for 2 players to connect. Once 2 players are connected, the server will actually launch the game by proceeding to the `GameInProgress` phase.
+* The `GameInProgress` phase, where the 2 players will actually play the game. When the game ends (either by a win or a draw), the server will proceed to the `GameEnded` phase.
+* The `GameEnded` phase, which will be the final phase of the game.
+
+Ravens allows use to model this sequence of phases by coding sub-classes of `Phase`. Each sub-class of `Phase` will have its own state, and will be capable of processing its own actions, specific to this phase. More information about Phases can be found about in [the documentation](../docs/main-concepts/phases).
+
+Let's write the skeletons of our phases in `src/TicTacToeGame.js`:
+
+```js
+import { Game, InvalidActionError, Phase } from "@ravens-engine/core";
+
+export class LobbyPhase extends Phase { }
+
+LobbyPhase.id = "lobby";
+
+export class GameInProgressPhase extends Phase { }
+
+GameInProgressPhase.id = "game-in-progress";
+
+export class GameEndedPhase extends Phase { }
+
+GameEndedPhase.id = "game-ended";
+
+export default class TicTacToeGame extends Game {
+    // ...
+}
+
+TicTacToeGame.childPhaseClasses = [LobbyPhase, GameInProgressPhase, GameEndedPhase];
+```
+
+Let's breakdown what we have added here:
+
+* ```js
+  export class LobbyPhase extends Phase { }
+  ```
+
+  This line defines a class that extends the `Phase` class. This class will contain everything related to the `LobbyPhase` of our games
+
+* ```js
+  LobbyPhase.id = "lobby";
+  ```
+
+  Here, we defined the id of our phase. This is a requirement of Ravens, and is used for serialization purposes
+
+* ```js
+  export class GameInProgressPhase extends Phase { }
+
+  GameInProgressPhase.id = "game-in-progress";
+
+  export class GameEndedPhase extends Phase { }
+
+  GameEndedPhase.id = "game-ended";
+  ```
+
+  In the same way we did for the `LobbyPhase`, we defined the `GameInProgressPhase` and `GameEndedPhase`.
+
+* ```js
+  TicTacToeGame.childPhaseClasses = [LobbyPhase, GameInProgressPhase, GameEndedPhase];
+  ```
+
+  Here, we list all the phases of our games defined earlier.
+
+[To Continue]
+
+The full code can be found in the [GitHub repository](https://github.com/ravens-engine/tic-tac-toe).
+
+## Launching the improved game
+
+To launch the game:
+
+```sh
+# In a terminal
+node ./src/server.js
+# In an other terminal
+parcel index.html
+```
+
+You can access the game by opening `http://localhost:8080`.
+
+To simulate a second player joining the game, access `http://localhost:8080#2`. You can simulate more players by increasing the number after the `#`.
