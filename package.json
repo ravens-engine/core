@@ -37,7 +37,8 @@
     "ws": "^7.4.3"
   },
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "peerDependencies": {
     "react": "^17.0.2"
