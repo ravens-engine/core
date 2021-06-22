@@ -8,6 +8,11 @@ import { Phase, AnyPhase, PhaseClass, AnyGame } from "./Phase";
 import { SerializedGame } from "./SerializedGame";
 import { SerializedPhase } from "./SerializedPhase";
 
+interface UserData {
+    id: string,
+    name: string,
+}
+
 export class Core<Game extends AnyGame> {
     id: string;
     name: string;
@@ -28,7 +33,7 @@ export class Core<Game extends AnyGame> {
         logger: winston.Logger | null = null,
         serializedGame: SerializedGame<Game> | null = null,
         status: GameStatus = GameStatus.IN_LOBBY,
-        players: string[] = []
+        players: string[] = [],
     ) {
         this.id = id;
         this.name = name;

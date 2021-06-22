@@ -1,7 +1,7 @@
 import { SerializedCore } from "../core/Core";
 import { GameStatus } from "../core/GameStatus";
 import { AnyGame } from "../core/Phase";
-import { UserData } from "../core/PlayerData";
+import { UserData } from "../core/UserData";
 import { Server } from "../server/Server";
 
 export interface PersistedMatchData {
