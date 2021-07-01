@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { SerializedCore } from "../core/Core";
 import { GameStatus } from "../core/GameStatus";
 import { AnyGame } from "../core/Phase";
-import { UserData } from "../core/PlayerData";
+import { UserData } from "../core/UserData";
 import { PersistedMatchData, ServerPersistenceLayer } from "./ServerPersistenceLayer";
 
 export class AirMeepleServerPersistenceLayer extends ServerPersistenceLayer {
