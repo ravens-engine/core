@@ -92,7 +92,7 @@ export class AirMeepleServerPersistenceLayer extends ServerPersistenceLayer {
         
         this.server.logger.info("calling /match/{}", {id});
 
-        await this.client.post(
+        await this.client.patch(
             "/match/" + id,
             {
                 status: serializedCore.status,
