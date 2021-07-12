@@ -111,7 +111,14 @@ test("Server correctly save a match after an action is processed", async () => {
 
     await flushPromises();
 
-    expect(saveMatchSpy).toHaveBeenCalledWith({id: "1", name: "Match #1", status: "IN_LOBBY", players: [], serializedGame: {state: {counter: 1}}});
+    expect(saveMatchSpy).toHaveBeenCalledWith({
+        id: "1",
+        name: "Match #1",
+        status: "IN_LOBBY",
+        players: [],
+        maxPlayers: 2,
+        serializedGame: {state: {counter: 1}}
+    });
 });
 
 test("Server correctly saves the new status of a game", async () => {
@@ -130,6 +137,7 @@ test("Server correctly saves the new status of a game", async () => {
         name: "Match #1",
         players: [],
         status: "STARTED",
+        maxPlayers: 2,
         serializedGame: {state: undefined, child: {id: "game-started", state: undefined}}
     });
 });

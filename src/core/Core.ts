@@ -1,6 +1,7 @@
 import _ from "lodash";
 import * as winston from "winston";
 import { InvalidStatusError } from "./errors/InvalidStatusError";
+import { MaxPlayersReachedError } from "./errors/MaxPlayersReachedError";
 import { PlayerAlreadyInGameError } from "./errors/PlayerAlreadyInGameError";
 import { PlayerNotInGameError } from "./errors/PlayerNotInGameError";
 import { GameStatus } from "./GameStatus";
@@ -23,6 +24,7 @@ export class Core<Game extends AnyGame> {
 
     status: GameStatus;
     players: string[];
+    maxPlayers: number;
 
     onStateChange: () => void;
 
@@ -33,6 +35,7 @@ export class Core<Game extends AnyGame> {
         logger: winston.Logger | null = null,
         serializedGame: SerializedGame<Game> | null = null,
         status: GameStatus = GameStatus.IN_LOBBY,
+        maxPlayers: number = 2,
         players: string[] = [],
     ) {
         this.id = id;
@@ -41,6 +44,7 @@ export class Core<Game extends AnyGame> {
         this.logger = logger ? logger : winston.createLogger();
         this.players = players;
         this.status = status;
+        this.maxPlayers = maxPlayers;
 
         if (serializedGame == null) {
             this.game = new gameClass(this, null);
@@ -74,6 +78,7 @@ export class Core<Game extends AnyGame> {
             name: this.name,
             serializedGame: _.omit(this.serializePhase(this.game), "id"),
             status: this.status,
+            maxPlayers: this.maxPlayers,
             players: this.players,
         };
 
@@ -108,6 +113,10 @@ export class Core<Game extends AnyGame> {
             throw new PlayerAlreadyInGameError(`Player "${userId}" is already a player`);
         }
 
+        if (this.players.length == this.maxPlayers) {
+            throw new MaxPlayersReachedError(`There are already ${this.players.length} players, when maxPlayers is already at ${this.maxPlayers}`);
+        }
+
         this.players.push(userId);
     }
 
@@ -117,6 +126,18 @@ export class Core<Game extends AnyGame> {
         }
 
         this.players = _.without(this.players, userId);
+    }
+
+    setMaxPlayers(maxPlayers: number): void {
+        if (maxPlayers <= 0) {
+            throw new RangeError(`maxPlayers must be > 0, ${maxPlayers} was given`);
+        }
+
+        if (maxPlayers < this.players.length) {
+            throw new RangeError(`maxPlayers can't be inferior than the current number of players, ${maxPlayers} was given`);
+        }
+
+        this.maxPlayers = maxPlayers;
     }
 
     applyAction(userId: string, action: object): void {
@@ -189,6 +210,7 @@ export class Core<Game extends AnyGame> {
             logger,
             serializedCore.serializedGame,
             serializedCore.status,
+            serializedCore.maxPlayers,
             serializedCore.players,
         );
     }
@@ -199,5 +221,6 @@ export interface SerializedCore<Game extends AnyGame> {
     name: string,
     serializedGame: SerializedGame<Game>;
     status: GameStatus;
+    maxPlayers: number;
     players: string[];
 }

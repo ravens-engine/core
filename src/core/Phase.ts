@@ -75,4 +75,8 @@ export abstract class Phase<State = any, Action = any, InitArgs = null, Parent e
     setStatus(status: GameStatus): void {
         this.core.setStatus(status);
     }
+
+    setMaxPlayers(maxPlayers: number): void {
+        this.core.setMaxPlayers(maxPlayers);
+    }
 }

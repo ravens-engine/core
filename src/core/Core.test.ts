@@ -2,6 +2,7 @@ import SimpleCounterGame from "../test-utils/SimpleCounterGame";
 import { BeforeStartPhase, GameEndedPhase, GameStartedPhase, ThreePhaseGame } from "../test-utils/ThreePhaseGame";
 import { Core } from "./Core";
 import { InvalidStatusError } from "./errors/InvalidStatusError";
+import { MaxPlayersReachedError } from "./errors/MaxPlayersReachedError";
 import { PlayerAlreadyInGameError } from "./errors/PlayerAlreadyInGameError";
 import { PlayerNotInGameError } from "./errors/PlayerNotInGameError";
 import { Game } from "./Game";
@@ -109,5 +110,54 @@ describe("Core", () => {
         });
 
         expect(core.players).toEqual(["2"]);
+    });
+
+    it("correctly set 2 as the default maxPlayers value", () => {
+        const core = new Core("1", "Name", ThreePhaseGame);
+
+        expect(core.maxPlayers).toBe(2);
+    });
+
+    it("correctly modifies maxPlayers when setMaxPlayers is called", () => {
+        class MaxPlayersChangeGame extends Game {
+            applyAction(userId: string, action: any): void {
+                if (action.type == "change") {
+                    this.setMaxPlayers(action.maxPlayers);
+                }
+            }
+        }
+
+        const core = new Core("1", "Name", MaxPlayersChangeGame);
+
+        core.applyAction("1", {
+            type: "change",
+            maxPlayers: 5
+        });
+
+        expect(core.maxPlayers).toBe(5);
+    });
+
+    it("correctly doesn't allow a player to be added if there are already maxPlayers players in the game", () => {
+        class PlayerChangeGame extends Game {
+            applyAction(userId: string, action: any): void {
+                if (action.type == "add-me") {
+                    this.addPlayer(userId);
+                } else if (action.type == "remove-me") {
+                    this.removePlayer(userId);
+                }
+            }
+        }
+
+        const core = new Core("1", "Name", PlayerChangeGame);
+
+        core.applyAction("1", {
+            type: "add-me"
+        });
+
+        core.applyAction("2", {
+            type: "add-me"
+        });
+
+        expect(() => core.applyAction("3", {type: "add-me"})).toThrowError(MaxPlayersReachedError);
     });
 });

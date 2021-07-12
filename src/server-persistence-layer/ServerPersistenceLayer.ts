@@ -9,6 +9,7 @@ export interface PersistedMatchData {
     name: string,
     status: GameStatus,
     serializedMatch: object | null,
+    maxPlayers: number,
     players: string[],
 }
 

@@ -116,6 +116,7 @@ export class Server<Game extends AnyGame> {
                     name: persistedMatchData.name,
                     status: persistedMatchData.status,
                     serializedGame: persistedMatchData.serializedMatch as SerializedGame<Game>,
+                    maxPlayers: persistedMatchData.maxPlayers,
                     players: persistedMatchData.players
                 });
             }

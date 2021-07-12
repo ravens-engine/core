@@ -24,6 +24,7 @@ export class DumbServerPersistenceLayer extends ServerPersistenceLayer {
             status: GameStatus.IN_LOBBY,
             name: "Match #" + matchId,
             serializedMatch: null,
+            maxPlayers: 0,
             players: []
         };
     }

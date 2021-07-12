@@ -66,7 +66,7 @@ export class AirMeepleServerPersistenceLayer extends ServerPersistenceLayer {
             this.server.logger.info("calling GET /match/{}", {matchId});
             const response = await this.client.get<GetMatchResponse>("/match/" + matchId);
 
-            const {id, name, status, players, serialized_match: serializedMatch} = response.data;
+            const {id, name, status, players, serialized_match: serializedMatch, max_players: maxPlayers} = response.data;
             const castedStatus = status as GameStatus;
     
             return {
@@ -74,6 +74,7 @@ export class AirMeepleServerPersistenceLayer extends ServerPersistenceLayer {
                 name,
                 status: castedStatus,
                 serializedMatch,
+                maxPlayers,
                 players,
             };
         } catch (e) {
@@ -98,6 +99,7 @@ export class AirMeepleServerPersistenceLayer extends ServerPersistenceLayer {
                 status: serializedCore.status,
                 players: serializedCore.players,
                 serialized_match: serializedCore.serializedGame,
+                max_players: serializedCore.maxPlayers,
             } 
         );
     }
@@ -115,5 +117,6 @@ interface GetMatchResponse {
     name: string,
     status: string,
     players: string[],
+    max_players: number,
     serialized_match: object,
 }
