@@ -13,7 +13,7 @@ To define the phases of your game:
 
 * Create a class extending `Phase` for each of the phases of your game.
 * For each of them, define an `id` property.
-* Define the property `childPhases` in your `Game`, with the list of possible child Phases.
+* Define the property `childPhaseClasses` in your `Game`, with the list of possible child Phases.
 
 For example, a game with 3 phases would be defined this way:
 
@@ -28,7 +28,7 @@ class GameEndedPhase extends Phase { /* ... */ }
 GameEndedPhase.id = "game-ended";
 
 class ExampleGame extends Game { /* ... */ }
-ExampleGame.childPhases = [LobbyPhase, GameInProgressPhase, GameEndedPhase];
+ExampleGame.childPhaseClasses = [LobbyPhase, GameInProgressPhase, GameEndedPhase];
 ```
 
 One could visualize the different phases as a tree of phases, with our `Game` at the top. The phase tree for the game defined above would be:
@@ -44,7 +44,7 @@ To initialize the first phase, use the `this.setChild` function inside the `init
 ```js {3}
 class ExampleGame extends Game {
     initialize() {
-        setChild(LobbyPhase);
+        this.setChild(LobbyPhase);
     }
 }
 ```
@@ -110,10 +110,10 @@ SecondSubPhase.id = "second-sub";
 
 class GameInProgressPhase extends Phase { /* ... */ }
 GameInProgressPhase.id = "game-in-progress";
-GameInProgressPhase.childPhases = [FirstSubPhase, SecondSubPhase];
+GameInProgressPhase.childPhaseClasses = [FirstSubPhase, SecondSubPhase];
 
 class ExampleGame extends Game { /* ... */ }
-ExampleGame.childPhases = [LobbyPhase, GameInProgressPhase, GameEndedPhase];
+ExampleGame.childPhaseClasses = [LobbyPhase, GameInProgressPhase, GameEndedPhase];
 ```
 
 To set the child phase of a phase, use the `this.setChild` method of `Phase`, much in the same way that it is done for `Game`:
@@ -137,5 +137,5 @@ The phase tree architecture can be a great tool to model complex games. As an ex
 Each of this phase asks a different action from the players, or sometimes from only a subset of the players. The phase architecture is critical to properly handle the complexity of some turn-based games.
 
 :::info
-The similarity in the names between _Swords and Ravens_ and _Ravens_ is not accidental. It's while coding S&R that I realized that it could be possible to create a library to help developping online turn-based games. Thus, _Ravens_ was born
+The similarity in the names between _Swords and Ravens_ and _Ravens_ is not accidental. It's while coding S&R that I realized that it could be possible to create a library to help developping online turn-based games. Thus, _Ravens_ was born.
 :::

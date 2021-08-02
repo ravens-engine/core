@@ -1,8 +1,11 @@
 import * as WebSocket from "ws";
 import * as uuid from "uuid";
 import { ServerTransportLayer } from "./ServerTransportLayer";
+import express from "express";
+import expressWs from "express-ws";
 
 export class ServerSocketTransportLayer extends ServerTransportLayer {
+    expressApp: any;
     websocketServer: WebSocket.Server;
     port: number;
 
@@ -15,14 +18,16 @@ export class ServerSocketTransportLayer extends ServerTransportLayer {
     }
 
     start(): void {
-        this.websocketServer = new WebSocket.Server({
-            port: this.port
-        });
+        this.expressApp = express();
+        expressWs(this.expressApp);
 
-        this.websocketServer.on("connection", (websocket: WebSocket) => {
+        this.expressApp.use(express.static("dist"));
+
+        // @ts-ignore The "ws" method is added by "express-ws", but
+        // is not referenced in "express" type files
+        this.expressApp.ws("/", (websocket: WebSocket) => {
             // Generate an id to assign to this specific connection
             const clientId = uuid.v4();
-
 
             this.websockets.set(clientId, websocket);
             this.clientIds.set(websocket, clientId);
@@ -35,6 +40,8 @@ export class ServerSocketTransportLayer extends ServerTransportLayer {
                 this.privateOnClose(websocket);
             });
         });
+
+        this.expressApp.listen(this.port);
     }
 
     private privateOnMessage(websocket: WebSocket, messageRaw: string): void {

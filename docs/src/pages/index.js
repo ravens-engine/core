@@ -9,10 +9,9 @@ import styles from './styles.module.css';
 const features = [
   {
     title: 'Focus on the game',
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
-        Ravens handles all the networks, focus on building the game
+        Ravens handles all the networks, letting you focus on building your game
       </>
     ),
   },
@@ -38,7 +37,6 @@ function Home() {
   const {siteConfig = {}} = context;
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
       description="Description will go into a meta tag in <head />"
       noFooter={true}>
       <header className={clsx(styles.heroBanner)}>

@@ -1,7 +1,7 @@
 {
   "name": "@ravens-engine/core",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/core/index.js",
+  "types": "lib/core/index.d.ts",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^26.0.10",
@@ -29,7 +29,12 @@
     "prepack": "yarn run build"
   },
   "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/express-ws": "^3.0.1",
     "axios": "^0.21.1",
+    "boardgame.io": "^0.46.0",
+    "express": "^4.17.1",
+    "express-ws": "^5.0.2",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",

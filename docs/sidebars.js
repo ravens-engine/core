@@ -4,7 +4,8 @@ module.exports = {
     {
       type: "category",
       label: "Guides",
-      items: ["main-concepts/phases"]
+      items: ["main-concepts/phases"],
+      collapsed: false,
     },
     /*{
       type: "category",
@@ -20,7 +21,8 @@ module.exports = {
         "api/invalid-action-error",
         "api/client",
         "api/server",
-      ]
+      ],
+      collapsed: false,
     }
   ],
 };
