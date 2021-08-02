@@ -9,7 +9,7 @@ import * as winston from "winston";
 import BrowserConsole from 'winston-transport-browserconsole';
 
 // Necessary for winston to work in the browser: https://github.com/winstonjs/winston/issues/1354#issuecomment-426433071
-import "setImmediate";
+import "setimmediate";
 import _ from "lodash";
 
 export interface ClientConfig<Game extends AnyGame> {
