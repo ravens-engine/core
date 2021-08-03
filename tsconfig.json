@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "noImplicitAny": true,
-        "module": "es2015",
+        "module": "commonjs",
         "target": "es6",
         "jsx": "react",
         "sourceMap": true,

@@ -1,4 +1,4 @@
-export * from "../core";
+export * from "../core/index";
 
 export * from "./Client";
 export * from "./ClientMessage";
