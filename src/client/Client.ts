@@ -11,10 +11,11 @@ import BrowserConsole from 'winston-transport-browserconsole';
 // Necessary for winston to work in the browser: https://github.com/winstonjs/winston/issues/1354#issuecomment-426433071
 import "setimmediate";
 import _ from "lodash";
+import { ClientSocketTransportLayer } from "../client-transport-layer/ClientSocketTransportLayer";
 
 export interface ClientConfig<Game extends AnyGame> {
     gameClass: PhaseClass<Game>,
-    transportLayer: ClientTransportLayer,
+    transportLayer?: ClientTransportLayer,
     authenticationProvider?: ClientAuthenticationProvider,
 }
 
@@ -40,7 +41,15 @@ export class Client<Game extends AnyGame> {
     public constructor(config: ClientConfig<Game>) {
         this.config = config;
 
-        this.transportLayer = config.transportLayer;
+        if (config.transportLayer) {
+            this.transportLayer = config.transportLayer;
+        } else {
+            // Determine the default url to
+            const protocol = window.location.protocol == "https:" ? "wss:" : "ws:";
+            const host = window.location.hostname == "localhost" ? "localhost:8081" : window.location.host;
+
+            this.transportLayer = new ClientSocketTransportLayer(protocol + "//" + host);
+        }
         this.transportLayer.onConnected = () => this.onConnected();
         this.transportLayer.onDisconnected = () => this.onDisconnected();
         this.transportLayer.onMessage = message => this.onMessage(message);

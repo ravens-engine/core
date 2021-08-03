@@ -46,7 +46,6 @@ export class GameComponent<Game extends AnyGame> extends Component<RavensGameCom
     componentDidMount(): void {
         const client = new Client({
             gameClass: this.props.gameClass,
-            transportLayer: new ClientSocketTransportLayer("ws://localhost:8081")
         });
 
         // @ts-expect-error To add a property to the browser console
