@@ -45,6 +45,12 @@ export class ServerSocketTransportLayer extends ServerTransportLayer {
     }
 
     private privateOnMessage(websocket: WebSocket, messageRaw: string): void {
+        // The client periodically sends an empty message as a keep-alive.
+        // Ignore it
+        if (messageRaw == "") {
+            return;
+        }
+
         const message = JSON.parse(messageRaw);
 
         const clientId = this.clientIds.get(websocket)!;

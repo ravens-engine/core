@@ -4,6 +4,8 @@ export class ClientSocketTransportLayer extends ClientTransportLayer {
     websocket: WebSocket;
     address: string;
 
+    pingInterval: any;
+
     public constructor(address: string) {
         super();
         this.address = address;
@@ -22,6 +24,14 @@ export class ClientSocketTransportLayer extends ClientTransportLayer {
     }
 
     onOpen(): void {
+        /**
+         * Because some PaaS closes the websocket after inactivity (Heroku, for example),
+         * send an empty message periodically to keep it alive. 
+         */
+        this.pingInterval = setInterval(() => {
+            this.websocket.send("");
+        }, 10000);
+
         this.onConnected();
     }
 
