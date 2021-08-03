@@ -14,7 +14,7 @@ export class ServerSocketTransportLayer extends ServerTransportLayer {
 
     public constructor(port = 8081) {
         super();
-        this.port = port;
+        this.port = process.env.PORT ? parseInt(process.env.PORT) : port;
     }
 
     start(): void {
