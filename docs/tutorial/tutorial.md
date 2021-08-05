@@ -32,7 +32,7 @@ In Ravens, a game is defined by 2 concepts:
 To define a game in Ravens, create a class extending `Game`: 
 
 ```javascript
-import { Game } from "ravens"; 
+import { Game } from "@ravens-engine/core/lib/core/index.js"; 
 
 export default class TicTacToe extends Game {
 
@@ -130,7 +130,7 @@ processAction(userId, action) {
 For now, our `processAction` method accepts any move sent by the users, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an `InvalidActionError` whenever `processAction` encounters an invalid move:
 
 ```javascript {7-10}
-import { Game, InvalidActionError } from "@ravens-engine/core";
+import { Game, InvalidActionError } from "@ravens-engine/core/lib/core/index.js";
 
 // ...
 
@@ -220,7 +220,7 @@ Then, `src/client.jsx`:
 ```jsx
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { GameComponent } from "@ravens-engine/core";
+import { GameComponent } from "@ravens-engine/core/lib/client/index.js";
 import TicTacToeGame from "./TicTacToeGame";
 import TicTacToeComponent from "./TicTacToeComponent";
 
@@ -233,7 +233,7 @@ ReactDOM.render(
 Finally, `src/server.js`:
 
 ```js
-import { Server } from "@ravens-engine/core";
+import { Server } from "@ravens-engine/core/lib/server/index.js";
 import TicTacToeGame from "./TicTacToeGame";
 
 const server = new Server({
@@ -292,7 +292,7 @@ Ravens allows use to model this sequence of phases by coding sub-classes of `Pha
 Let's write the skeletons of our phases in `src/TicTacToeGame.js`:
 
 ```js
-import { Game, InvalidActionError, Phase } from "@ravens-engine/core";
+import { Game, InvalidActionError, Phase } from "@ravens-engine/core/lib/core/index.js";
 
 export class LobbyPhase extends Phase { }
 
