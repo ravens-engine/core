@@ -14,6 +14,6 @@ Run `yarn run develop` to continuously build the library. To test your modificat
 
 ## Contributing
 
-Ravens is open-source, but closed to contributions. At the moment, while the project is working and can be used, I'm still a bit experimenting on the right structures & abstractions. The effort to properly support third-party contributions
+Ravens is open-source, but closed to contributions. At the moment, while the project is working and can be used, I'm still a bit experimenting on the right structures & abstractions. Properly supporting external contributions takes time, and I'm not ready at the moment to do that. 
 
 Feel free to open issues or comments on the existing ones if you have feedback to give, but don't expect unsollicited pull requests to be merged. 🙂
