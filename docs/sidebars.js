@@ -4,7 +4,7 @@ module.exports = {
     {
       type: "category",
       label: "Guides",
-      items: ["main-concepts/phases"],
+      items: ["main-concepts/phases", "main-concepts/randomness"],
       collapsed: false,
     },
     /*{
