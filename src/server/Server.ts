@@ -3,6 +3,7 @@ import * as winston from "winston";
 import { ClientMessage } from "../client/ClientMessage";
 import { Core } from "../core/Core";
 import { InvalidActionError } from "../core/errors/InvalidActionError";
+import { OperationContext } from "../core/OperationContext";
 import { AnyGame, PhaseClass } from "../core/Phase";
 import { SerializedGame } from "../core/SerializedGame";
 import { AirMeepleServerPersistenceLayer } from "../server-persistence-layer/AirMeepleServerPersistenceLayer";
@@ -211,7 +212,7 @@ export class Server<Game extends AnyGame> {
                 if (justConnected) {
                     this.logger.info("first connection, firing up connection event", {clientId});
 
-                    this.applyOperationToCore(matchId, core, () => {
+                    const operationContext = this.applyOperationToCore(matchId, core, () => {
                         core.fireUserConnectionEvent(userId);
                     });
 
@@ -221,7 +222,8 @@ export class Server<Game extends AnyGame> {
                         matchId,
                         {
                             type: "user-connection",
-                            userId
+                            userId,
+                            operationContext
                         },
                         [userId]
                     );
@@ -244,9 +246,10 @@ export class Server<Game extends AnyGame> {
                 this.logger.info("received action from user", {clientId, userId, matchId, action});
 
                 let errorHappened = false;
+                let operationContext: OperationContext | null = null;
     
                 try {
-                    this.applyOperationToCore(matchId, core, () => {
+                    operationContext = this.applyOperationToCore(matchId, core, () => {
                         core.applyAction(userId, action);
                     });
                 } catch (error) {
@@ -264,21 +267,27 @@ export class Server<Game extends AnyGame> {
                     this.broadcastMessage(matchId, {
                         type: "apply-action",
                         userId: userId,
-                        action
+                        action,
+                        // @ts-ignore operationContext is always != null if we went into this condition
+                        operationContext,
                     });
                 }
             }
         }
     }
 
-    /**
-     * Apply an operation to a core that may change the state of the match, thus
-     * requiring the match to be saved
-     */
-    private applyOperationToCore(matchId: string, core: Core<Game>, operation: () => void) {
+    private applyOperationToCore(matchId: string, core: Core<Game>, operation: () => void): OperationContext {
+        // Generate the seed that will be used for randomness during this operation
+        const seed = Math.floor(Math.random() * 1000000);
+        core.setSeed(seed);
+
         operation();
 
         this.saveMatch(matchId, core);
+
+        return {
+            seed
+        };
     }
 
     private isConnected(matchId: string, userId: string): boolean {
@@ -319,7 +328,7 @@ export class Server<Game extends AnyGame> {
                 // Fire the disconnection event
                 const core = this.cores.get(matchId)!;
 
-                this.applyOperationToCore(matchId, core, () => {
+                const operationContext = this.applyOperationToCore(matchId, core, () => {
                     core.fireUserDisconnectionEvent(userId);
                 })
 
@@ -327,7 +336,8 @@ export class Server<Game extends AnyGame> {
                     matchId,
                     {
                         type: "user-disconnection",
-                        userId
+                        userId,
+                        operationContext
                     }
                 );
             }

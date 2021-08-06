@@ -34,6 +34,10 @@ export abstract class Phase<State = any, Action = any, InitArgs = null, Parent e
         }
     }
 
+    get random(): Chance.Chance {
+        return this.core.random;
+    }
+
     get players(): string[] {
         return this.core.players;
     }

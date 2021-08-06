@@ -8,6 +8,7 @@ import { GameStatus } from "./GameStatus";
 import { Phase, AnyPhase, PhaseClass, AnyGame } from "./Phase";
 import { SerializedGame } from "./SerializedGame";
 import { SerializedPhase } from "./SerializedPhase";
+import Chance from "chance";
 
 interface UserData {
     id: string,
@@ -25,6 +26,8 @@ export class Core<Game extends AnyGame> {
     status: GameStatus;
     players: string[];
     maxPlayers: number;
+
+    random: Chance.Chance = new Chance();
 
     onStateChange: () => void;
 
@@ -138,6 +141,10 @@ export class Core<Game extends AnyGame> {
         }
 
         this.maxPlayers = maxPlayers;
+    }
+
+    setSeed(seed: number): void {
+        this.random = new Chance(seed);
     }
 
     applyAction(userId: string, action: object): void {

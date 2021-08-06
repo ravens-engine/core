@@ -160,4 +160,16 @@ describe("Core", () => {
 
         expect(() => core.applyAction("3", {type: "add-me"})).toThrowError(MaxPlayersReachedError);
     });
+
+    it("offers a random class to make randomness", () => {
+        class PlayerChangeGame extends Game<{roll: number}> {
+            applyAction(userId: string, action: any): void {
+                if (action.type == "roll") {
+                    this.state = {
+                        roll: this.random.d6()
+                    };
+                }
+            }
+        }
+    });
 });

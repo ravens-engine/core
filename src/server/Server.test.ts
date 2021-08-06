@@ -141,3 +141,31 @@ test("Server correctly saves the new status of a game", async () => {
         serializedGame: {state: undefined, child: {id: "game-started", state: undefined}}
     });
 });
+
+test("Server correctly dispatches the seed to have predictable randomness", async () => {
+    class RandomGame extends Game<{roll: number}> {
+        initialize(): void {
+            this.state = {
+                roll: 0
+            };
+        }
+
+        applyAction(userId: string, action: any): void {
+            if (action.type == "roll") {
+                this.state.roll = this.random.d100();
+            }
+        }
+    }
+
+    const [server, [clientOne, clientTwo]] = createServerAndClients(RandomGame);
+
+    await flushPromises();
+
+    clientOne.sendAction({type: "roll"});
+
+    await flushPromises();
+
+    expect(clientOne.game.state.roll).toBeGreaterThan(0);
+    expect(clientTwo.game.state.roll).toBeGreaterThan(0);
+    expect(clientOne.game.state.roll).toBe(clientTwo.game.state.roll);
+});

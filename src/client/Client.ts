@@ -12,6 +12,7 @@ import BrowserConsole from 'winston-transport-browserconsole';
 import "setimmediate";
 import _ from "lodash";
 import { ClientSocketTransportLayer } from "../client-transport-layer/ClientSocketTransportLayer";
+import { OperationContext } from "../core/OperationContext";
 
 export interface ClientConfig<Game extends AnyGame> {
     gameClass: PhaseClass<Game>,
@@ -91,13 +92,17 @@ export class Client<Game extends AnyGame> {
                 this.onStateChange();
             }
         } else if (message.type == "apply-action") {
-            const {userId, action} = message;
+            const {userId, action, operationContext} = message;
 
-            this.core.applyAction(userId, action);
+            this.applyOperation(() => this.core.applyAction(userId, action), operationContext);
         } else if (message.type == "user-connection") {
-            this.core.fireUserConnectionEvent(message.userId);
+            const {userId, operationContext} = message;
+
+            this.applyOperation(() => this.core.fireUserConnectionEvent(userId), operationContext);
         } else if (message.type == "user-disconnection") {
-            this.core.fireUserDisconnectionEvent(message.userId);
+            const {userId, operationContext} = message;
+
+            this.applyOperation(() => this.core.fireUserDisconnectionEvent(userId), operationContext);
         }
     }
 
@@ -105,6 +110,13 @@ export class Client<Game extends AnyGame> {
         this.logger.debug("sending message", {message});
 
         this.transportLayer.transportMessage(message);
+    }
+
+    private applyOperation(operation: () => void, operationContext: OperationContext) {
+        // Restore the seed
+        this.core.setSeed(operationContext.seed);
+
+        operation();
     }
 
     /**
