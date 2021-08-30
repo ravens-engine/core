@@ -20,4 +20,6 @@ export abstract class ServerPersistenceLayer {
     abstract authenticateUser(userId: string, matchId: string, authToken: string): Promise<UserData | null>;
     abstract getMatch(matchId: string): Promise<PersistedMatchData | null>;
     abstract saveMatch(seriaizedCore: SerializedCore<AnyGame>): Promise<void>;
+    abstract sendMailNotification(matchId: string, subject: string, message: string, users: string[]): Promise<void>;
+    abstract createRoom(matchId: string, userIds: string[]): Promise<void>;
 }

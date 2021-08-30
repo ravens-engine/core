@@ -42,6 +42,10 @@ export abstract class Phase<State = any, Action = any, InitArgs = null, Parent e
         return this.core.players;
     }
 
+    get status(): GameStatus {
+        return this.core.status;
+    }
+
     constructor(core: Core<AnyGame>, parent: Parent) {
         this.core = core;
         this.parent = parent;
@@ -82,5 +86,13 @@ export abstract class Phase<State = any, Action = any, InitArgs = null, Parent e
 
     setMaxPlayers(maxPlayers: number): void {
         this.core.setMaxPlayers(maxPlayers);
+    }
+
+    sendMailNotification(subject: string, message: string, users: string[]) {
+        this.core.sendMailNotification(subject, message, users);
+    }
+
+    createRoom(users: string[]) {
+        this.core.createRoom(users);
     }
 }

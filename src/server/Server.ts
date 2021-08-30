@@ -122,6 +122,14 @@ export class Server<Game extends AnyGame> {
                 });
             }
 
+            // Setup the different integrations
+            core.onSendMailNotification = (subject, message, users) => {
+                this.persistenceLayer.sendMailNotification(matchId, subject, message, users);
+            };
+            core.onRoomCreation = (users) => {
+                this.persistenceLayer.createRoom(matchId, users);
+            };
+
             this.cores.set(matchId, core);
 
             return core;

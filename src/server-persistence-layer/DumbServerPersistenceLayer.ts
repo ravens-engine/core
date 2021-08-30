@@ -32,5 +32,12 @@ export class DumbServerPersistenceLayer extends ServerPersistenceLayer {
     async saveMatch(_serializedCore: SerializedCore<AnyGame>): Promise<void> {
         // Do nothing
     }
-    
+
+    async sendMailNotification(match: string, subject: string, message: string, users: string[]): Promise<void> {
+        // Do Nothing
+    }
+
+    async createRoom(matchId: string, userIds: string[]): Promise<void> {
+        // Do nothing
+    }
 }

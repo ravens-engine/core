@@ -31,6 +31,9 @@ export class Core<Game extends AnyGame> {
 
     onStateChange: () => void;
 
+    onSendMailNotification: (subject: string, message: string, users: string[]) => void;
+    onRoomCreation: (users: string[]) => void;
+ 
     constructor(
         id: string,
         name: string,
@@ -141,6 +144,18 @@ export class Core<Game extends AnyGame> {
         }
 
         this.maxPlayers = maxPlayers;
+    }
+
+    sendMailNotification(subject: string, message: string, users: string[]) {
+        if (this.onSendMailNotification != null) {
+            this.onSendMailNotification(subject, message, users);
+        }
+    }
+
+    createRoom(users: string[]): void {
+        if (this.onRoomCreation != null) {
+            this.onRoomCreation(users);
+        }
     }
 
     setSeed(seed: number): void {

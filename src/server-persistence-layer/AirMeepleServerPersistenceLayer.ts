@@ -97,13 +97,34 @@ export class AirMeepleServerPersistenceLayer extends ServerPersistenceLayer {
             "/match/" + id,
             {
                 status: serializedCore.status,
-                players: serializedCore.players,
+                players: serializedCore.players.map(playerId => { return {user: playerId}; }),
                 serialized_match: serializedCore.serializedGame,
                 max_players: serializedCore.maxPlayers,
             } 
         );
     }
     
+    async sendMailNotification(match: string, subject: string, message: string, users: string[]): Promise<void> {
+        await this.client.post(
+            "/mail_notification",
+            {
+                match,
+                subject,
+                message,
+                users
+            }
+        );
+    }
+    
+    async createRoom(matchId: string, userIds: string[]): Promise<void> {
+        await this.client.post(
+            "/room",
+            {
+                match: matchId,
+                users: userIds
+            }
+        )
+    }
 }
 
 interface GetUserResponse {
