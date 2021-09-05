@@ -299,7 +299,7 @@ export class Server<Game extends AnyGame> {
     }
 
     private isConnected(matchId: string, userId: string): boolean {
-        return this.clientIdsForMatchIdAndUserId.has(userId);
+        return this.clientIdsForMatchIdAndUserId.has(matchId + "/" + userId);
     }
 
     onClientClose(clientId: string): void {
