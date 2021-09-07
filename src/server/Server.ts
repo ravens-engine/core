@@ -147,7 +147,7 @@ export class Server<Game extends AnyGame> {
     }
 
     sendMessage(matchId: string, userId: string, message: ServerMessage<Game>): void {
-        const clientIds = this.clientIdsForMatchIdAndUserId.get(userId)!;
+        const clientIds = this.clientIdsForMatchIdAndUserId.get(matchId + "/" + userId)!;
 
         this.transportLayer.transportMessage(clientIds, message);
     }
@@ -316,13 +316,13 @@ export class Server<Game extends AnyGame> {
             clientIds.splice(clientIds.indexOf(clientId), 1);
 
             if (clientIds.length > 0) {
-                this.clientIdsForMatchIdAndUserId.set(userId, clientIds);
+                this.clientIdsForMatchIdAndUserId.set(matchId + "/" + userId, clientIds);
             } else {
                 this.logger.info("user disconnected", {userId, matchId});
 
                 // This was the last connected client id for this user,
                 // i.e this user is effectively offline for this game.
-                this.clientIdsForMatchIdAndUserId.delete(userId);
+                this.clientIdsForMatchIdAndUserId.delete(matchId + "/" + userId);
 
                 const userIds = this.userIdsForMatchId.get(matchId)!;
                 userIds.splice(userIds.indexOf(userId), 1);
