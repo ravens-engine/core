@@ -345,7 +345,132 @@ Let's breakdown what we have added here:
 
   Here, we list all the phases of our games defined earlier.
 
-[To Continue]
+Let's now implement Tic-Tac-Toe using the phases we defined
+
+#### Modifying TicTacToeGame
+
+We'll first modify the class `TicTacToe` that we defined earlier. We'll remove parts that 
+
+```js
+export default class TicTacToe extends Game {
+  initialize() {
+    const emptyGrid = [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
+    ];
+
+    this.state = {
+      grid: emptyGrid,
+      turn: "O"
+    }
+
+    this.setChild(LobbyPhase);
+  }
+
+  // `processAction` has been removed
+}
+```
+
+We did two things:
+
+* In `initialize`, a line was added to initialize the initial phase of our game, `LobbyPhase`.
+* `processAction` was removed since it's the child phases that will handle the actions.
+
+#### Implementing LobbyPhase
+
+`LobbyPhase` will wait for new users to join. When 2 players have joined, it will proceed to the `GameInProgressPhase` phase:
+
+```js
+export class LobbyPhase extends Phase {
+    onUserConnection(userId) {
+        // Add the player to the game
+        this.addPlayer(userId);
+
+        if (this.players.length == 2) {
+            // 2 players have connected, start the game!
+            this.parent.setChild(GameInProgressPhase);
+        }
+    }
+
+    onUserDisconnection(userId) {
+        // Remove the player
+        this.removePlayer(userId);
+    }
+}
+```
+
+Notice that:
+
+* We tell Ravens to mark a user as a player using `this.addPlayer`. Conversely, we can unmark them using `this.removePlayer`.
+* We can access the list of players with `this.players`.
+* Once 2 users have connected, we change the phase of the game using `this.parent.setchild`. Indeed, `this.parent` corresponds to the `TicTacToe` class that we defined. Calling `this.parent.setChild` thus replaces the current phase by the new one.
+
+#### Implementing GameInProgressPhase
+
+
+#### Implementing GameEndedPhase
+
+#### Modifying the UI
+
+Now that we split our game into 3 phases, we can modify the UI:
+
+```jsx
+export default class TicTacToeComponent extends React.Component {
+    render() {
+        return <>
+            <div>
+                Player {this.props.client.userId} - 
+                {this.props.game.child instanceof LobbyPhase && (
+                    <>Waiting for <b>{2 - this.props.game.players.length}</b> players</>
+                )}
+                {this.props.game.child instanceof GameInProgressPhase && (
+                    <>Turn: <b>{this.props.game.state.turn}</b> {this.props.game.isTurn(this.props.client.userId) && "(Your turn)"}</>
+                )}
+                {this.props.game.child instanceof GameEndedPhase && (
+                    this.props.game.child.state.winner != null
+                        ? <>Winner: <b>{this.props.game.child.state.winner}</b>!</>
+                        : <>Draw</>
+                )}
+            </div>
+            <table>
+                <tbody>
+                    {this.props.game.state.grid.map((row, y) => (
+                        <tr key={y}>
+                            {this.props.game.state.grid[y].map((cell, x) => (
+                                <td key={x}
+                                    style={{width: "50px"}}
+                                    className={this.canFill(x, y) ? "clickable" : ""}
+                                    onClick={this.onCellClick.bind(this, x, y)}>
+                                        {cell}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </>;
+    }
+
+    onCellClick(x, y) {
+        this.props.client.sendAction({
+            type: "fill",
+            cell: {
+                x,
+                y
+            }
+        });
+    }
+
+    canFill(x, y) {
+        return this.props.game.child instanceof GameInProgressPhase
+            && this.props.game.isTurn(this.props.client.userId)
+            && this.props.game.state.grid[y][x] == null;
+    }
+}
+```
+
+Notice how we can use `this.props.game.child instanceof XXX` to check in which phase the game is currently in, allowing us to make our UI display accordingly.
 
 The full code can be found in the [GitHub repository](https://github.com/ravens-engine/tic-tac-toe).
 
