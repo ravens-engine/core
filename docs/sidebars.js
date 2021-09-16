@@ -1,6 +1,6 @@
 module.exports = {
   docsSidebar: [
-    "get-started",
+    "getting-started",
     {
       type: "category",
       label: "Guides",
