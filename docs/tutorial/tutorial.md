@@ -16,7 +16,7 @@ cd tic-tac-toe
 npm install @ravens-engine/core
 ```
 
-Create a file `src/TicTacToe.js`. Inside it, we'll use Ravens to create our game.
+Create a file `src/TicTacToeGame.js`. Inside it, we'll use Ravens to create our game.
 
 ## Defining a game
 
@@ -34,7 +34,7 @@ To define a game in Ravens, create a class extending `Game`:
 ```javascript
 import { Game } from "@ravens-engine/core/lib/core/index.js"; 
 
-export default class TicTacToe extends Game {
+export default class TicTacToeGame extends Game {
 
 }
 ```
@@ -42,7 +42,7 @@ export default class TicTacToe extends Game {
 The first thing we need to define is the initial state of our game. In this example, it will be an empty 3-by-3 grid, represented by a two-dimensional array in Javascript. To achieve this, we define the `initialize` method of `Game`:
 
 ```javascript {2-12}
-export default class TicTacToe extends Game {
+export default class TicTacToeGame extends Game {
   initialize() {
     const emptyGrid = [
       [null, null, null],
@@ -87,7 +87,7 @@ export default class TicTacToe extends Game {
 Now that the state of our game is correctly initialized, we can define the actions that users can do. To handle them, we define the `processAction` method of `Game`:
 
 ```javascript {4-6}
-export default class TicTacToe extends Game {
+export default class TicTacToeGame extends Game {
   // ...
 
   processAction(userId, action) {
