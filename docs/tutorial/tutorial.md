@@ -13,6 +13,7 @@ Let's create a new Javascript project and install the Ravens engine:
 ```bash
 mkdir tic-tac-toe
 cd tic-tac-toe
+npm init
 npm install @ravens-engine/core
 ```
 
