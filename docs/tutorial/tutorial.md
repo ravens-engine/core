@@ -177,7 +177,7 @@ export default class TicTacTocComponent extends React.Component {
     for (let y = 0;y < 3;y++) {
       const row = [];
 
-      for (let y = 0;y < 3;y++) {
+      for (let x = 0;x < 3;x++) {
         row.push(<td>{this.props.game.state.grid[y][x]}</td>);
       }
 
