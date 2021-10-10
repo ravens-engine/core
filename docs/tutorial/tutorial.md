@@ -188,7 +188,9 @@ export default class TicTacTocComponent extends React.Component {
       <div style="display: flex; align-items: center">
         <div>{this.props.game.state.turn}</div>
         <table>
-          {tableRows}
+          <tbody>
+            {tableRows}
+          </tbody>
         </table>
       </div>
     );
