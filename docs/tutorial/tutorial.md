@@ -220,6 +220,92 @@ export default class TicTacTocComponent extends React.Component {
 }
 ```
 
+## Responding to user actions
+
+We already configured the `src/TicTacToeGame.js` to respond to the "fill" user action. However we still need to allow for user clicks and to trigger the "fill" action in response to these clicks.
+
+Let's update `src/TicTacToeComponent.jsx` to add an `onClick` callback to each `<td>` table data cell.
+
+First, add the `onClick` callback to trigger a method named `onCellClick`, which we will define shortly. This method takes two arguements (in addition to `this`) for the position of the cell that was clicked `(this, x, y`):
+
+```jsx
+export default class TicTacTocComponent extends React.Component {
+  render() {
+
+// ...
+
+      for (let x = 0; x < 3; x++) {
+        row.push(<td onClick={this.onCellClick.bind(this, x, y)}>{this.props.game.state.grid[y][x]}</td>);
+      }
+
+// ...
+
+  }
+}
+```
+
+Now whenever the user clicks on one of the table cells, a call to `onCellClick` will be triggered. Let's now define `onCellClick` to issue a "fill" action using `this.props.client.sendAction()`. This will trigger a Ravens action that will be handled by the `applyAction` method in `src/TicTacToeGame`.
+
+```jsx
+export default class TicTacTocComponent extends React.Component {
+
+// ...
+
+  onCellClick(x, y) {
+    this.props.client.sendAction({
+      type: "fill",
+      cell: {
+        x,
+        y
+      }
+    });
+  }
+}
+```
+
+Now everytime the user clicks on a cell, a "fill" action will be applied. We already defined `applyAction` to respond to "fill" actions by updating the cell that was tapped and updating the turn state to reflect the next player's turn.
+
+The only problem here is that users can click on a cell that has already been filled. (The `applyAction` will handle this by issuing an exception, but this is not the best user experience. Instead, the UI should not allow invalid clicks ta all.)
+
+To fix this, let's add logic to determine if a cell is able to be filled:
+
+```jsx
+export default class TicTacTocComponent extends React.Component {
+
+// ...
+
+  canFill(x, y) {
+    return this.props.game.state.grid[x][y] == null;
+  }
+}
+```
+
+This method can be used in two places. The first is to update the UI to only display a pointer cursor when the cell is able to be filled. The second is within `onCellClick` to avoid issuing a `sendAction` when an invalid click occurs.
+
+```jsx
+export default class TicTacTocComponent extends React.Component {
+  render() {
+    //  ...
+      for (let y = 0;y < 3;y++) {
+        row.push(<td
+                     onClick={this.onCellClick.bind(this, x, y)}
+                     className={this.canFill(x, y) ? "clickable" : ""}>
+                         {this.props.game.state.grid[x][y]}
+                 </td>
+        );
+      }
+    //  ...
+  }
+
+  onCellClick(x, y) {
+    if (!this.canFill(x, y)) {
+      return;
+    }
+    //  ...
+  }
+}
+```
+
 ## Launching the game
 
 To be able to start a game server and a client, let's create 3 files that will be the starting point of those 2 processes:
@@ -294,7 +380,7 @@ To launch the UI, run in an other terminal:
 parcel index.html
 ```
 
-You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the
+You can now access the game by opening `http://localhost:8080`. You can now play the game by clicking on the squares to make a move for each player.
 
 ## Making it multiplayer
 
