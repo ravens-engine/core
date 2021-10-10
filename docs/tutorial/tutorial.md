@@ -274,7 +274,7 @@ You can now access the game by opening `http://localhost:8080`. You can click on
 
 ## Making it multiplayer
 
-At the moment, our game is a bit barebone:
+At the moment, our game is a bit bare-bones:
 
 * There's not concept of players yet as you can play the full game inside a single browser. We'll improve that by making the game truly multiplayer.
 * When a player wins the game, there's no message indicating who's the winner.
