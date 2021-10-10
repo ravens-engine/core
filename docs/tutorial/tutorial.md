@@ -84,13 +84,13 @@ export default class TicTacToe extends Game {
 
 ### Defining the actions
 
-Now that the state of our game is correctly initialized, we can define the actions that users can do. To handle them, we define the `processAction` method of `Game`:
+Now that the state of our game is correctly initialized, we can define the actions that users can do. To handle them, we define the `applyAction` method of `Game`:
 
 ```javascript {4-6}
 export default class TicTacToe extends Game {
   // ...
 
-  processAction(userId, action) {
+  applyAction(userId, action) {
 
   }
 }
@@ -111,10 +111,10 @@ This method receives two arguments:
   ```
   In this case, this action would corresponds to a user trying to fill the cell at coordinates `1, 2`.
 
-To handle the action of type `fill`, we can implement the logic in the method `processAction`:
+To handle the action of type `fill`, we can implement the logic in the method `applyAction`:
 
 ```javascript
-processAction(userId, action) {
+applyAction(userId, action) {
   if (action.type == "fill") {
     // Fill the grid with the new value
     this.state.grid[action.cell.y][action.cell.x] = this.state.turn;
@@ -127,14 +127,14 @@ processAction(userId, action) {
 
 #### Handling Invalid actions
 
-For now, our `processAction` method accepts any move sent by the users, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an `InvalidActionError` whenever `processAction` encounters an invalid move:
+For now, our `applyAction` method accepts any move sent by the users, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `applyAction`. Ravens expect that we throw an `InvalidActionError` whenever `applyAction` encounters an invalid move:
 
 ```javascript {7-10}
 import { Game, InvalidActionError } from "@ravens-engine/core/lib/core/index.js";
 
 // ...
 
-processAction(userId, action) {
+applyAction(userId, action) {
   if (action.type == "fill") {
     // Check if the cell has alrady been filled
     if (this.state.grid[action.cell.y][action.cell.x] != null) {
@@ -368,14 +368,14 @@ export default class TicTacToe extends Game {
     this.setChild(LobbyPhase);
   }
 
-  // `processAction` has been removed
+  // `applyAction` has been removed
 }
 ```
 
 We did two things:
 
 * In `initialize`, a line was added to initialize the initial phase of our game, `LobbyPhase`.
-* `processAction` was removed since it's the child phases that will handle the actions.
+* `applyAction` was removed since it's the child phases that will handle the actions.
 
 #### Implementing LobbyPhase
 
