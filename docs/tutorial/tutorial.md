@@ -185,7 +185,7 @@ export default class TicTacTocComponent extends React.Component {
     }
 
     return (
-      <div style="display: flex; align-items: center">
+      <div style={{ display: 'flex', alignItems: 'center'}}>
         <div>{this.props.game.state.turn}</div>
         <table>
           {tableRows}
