@@ -171,6 +171,8 @@ npm install react react-dom parcel-bundler
 Let's create a file `src/TicTacToeComponent.jsx`, and fill the `render` function with an UI for our game:
 
 ```jsx
+import * as React from "react";
+
 export default class TicTacTocComponent extends React.Component {
   render() {
     let tableRows = [];
