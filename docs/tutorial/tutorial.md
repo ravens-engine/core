@@ -22,17 +22,17 @@ Create a file `src/TicTacToe.js`. Inside it, we'll use Ravens to create our game
 
 In Ravens, a game is defined by 2 concepts:
 
-* The state of the game, which contains all the information. Ravens takes care of synchronizing this state across all the users, so they can display it in their browser.  
-  In the case of Tic-Tac-Toe, this is the grid, with the `X` and the `O` inside it.  
-* The actions that a user can do on the state of the games. When a user wants to do an action, it sends it to the server where it is validated, and broadcasted to all the connected users so they can update their state of the game.     
+* The state of the game, which contains all the information. Ravens takes care of synchronizing this state across all the users, so they can display it in their browser.
+  In the case of Tic-Tac-Toe, this is the grid, with the `X` and the `O` inside it.
+* The actions that a user can do on the state of the games. When a user wants to do an action, it sends it to the server where it is validated, and broadcasted to all the connected users so they can update their state of the game.
   In the case of Tic-Tac-Toe, there is only one: fill the grid with a symbol.
 
 ### Initialization
 
-To define a game in Ravens, create a class extending `Game`: 
+To define a game in Ravens, create a class extending `Game`:
 
 ```javascript
-import { Game } from "@ravens-engine/core/lib/core/index.js"; 
+import { Game } from "@ravens-engine/core/lib/core/index.js";
 
 export default class TicTacToe extends Game {
 
@@ -270,7 +270,7 @@ To launch the UI, run in an other terminal:
 parcel index.html
 ```
 
-You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the 
+You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the
 
 ## Making it multiplayer
 
@@ -349,7 +349,7 @@ Let's now implement Tic-Tac-Toe using the phases we defined
 
 #### Modifying TicTacToeGame
 
-We'll first modify the class `TicTacToe` that we defined earlier. We'll remove parts that 
+We'll first modify the class `TicTacToe` that we defined earlier. We'll remove parts that
 
 ```js
 export default class TicTacToe extends Game {
@@ -420,7 +420,7 @@ export default class TicTacToeComponent extends React.Component {
     render() {
         return <>
             <div>
-                Player {this.props.client.userId} - 
+                Player {this.props.client.userId} -
                 {this.props.game.child instanceof LobbyPhase && (
                     <>Waiting for <b>{2 - this.props.game.players.length}</b> players</>
                 )}
