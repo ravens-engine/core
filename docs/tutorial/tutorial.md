@@ -235,7 +235,7 @@ Finally, `src/server.js`:
 
 ```js
 import { Server } from "@ravens-engine/core/lib/server/index.js";
-import TicTacToeGame from "./TicTacToeGame";
+import TicTacToeGame from "./TicTacToeGame.js";
 
 const server = new Server({
     gameClass: TicTacToeGame
