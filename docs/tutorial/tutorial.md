@@ -411,6 +411,29 @@ Notice that:
 
 #### Implementing GameEndedPhase
 
+`GameEndedPhase` will be the final phase of the game. Its job is simple: track the winner so that it can be displayed in the UI.
+
+This phase will take a parameter during "initialization". In other words, this phase takes an argument whenever this phase is triggered via `this.parent.setChild(GameEndedPhase, ...)`.
+
+This parameter (`winner`) will be the 'X' or 'O' symbol corresponding to the winning player.
+
+```js
+export class GameEndedPhase extends Phase {
+    initialize(winner) {
+        this.state = {
+            winner
+        };
+    }
+}
+
+// ...
+```
+
+Notice that:
+
+* The `winner` is passed in to the phase via the `initialize()` parameter.
+* Phases can have their own internal state. For this phase, track the winner in the phase's state. This will be read by the UI code.
+
 #### Modifying the UI
 
 Now that we split our game into 3 phases, we can modify the UI:
