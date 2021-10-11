@@ -291,10 +291,10 @@ node ./src/server.js
 To launch the UI, run in an other terminal:
 
 ```sh
-parcel index.html
+npx parcel index.html
 ```
 
-You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the
+You can now access the game by opening `http://localhost:1234`. You can click on the square to fill the
 
 ## Making it multiplayer
 
@@ -529,9 +529,9 @@ To launch the game:
 # In a terminal
 node ./src/server.js
 # In an other terminal
-parcel index.html
+npx parcel index.html
 ```
 
-You can access the game by opening `http://localhost:8080`.
+You can access the game by opening `http://localhost:1234`.
 
-To simulate a second player joining the game, access `http://localhost:8080#2`. You can simulate more players by increasing the number after the `#`.
+To simulate a second player joining the game, access `http://localhost:1234#2`. You can simulate more players by increasing the number after the `#`.
