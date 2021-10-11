@@ -13,28 +13,29 @@ Let's create a new Javascript project and install the Ravens engine:
 ```bash
 mkdir tic-tac-toe
 cd tic-tac-toe
+npm init
 npm install @ravens-engine/core
 ```
 
-Create a file `src/TicTacToe.js`. Inside it, we'll use Ravens to create our game.
+Create a file `src/TicTacToeGame.js`. Inside it, we'll use Ravens to create our game.
 
 ## Defining a game
 
 In Ravens, a game is defined by 2 concepts:
 
-* The state of the game, which contains all the information. Ravens takes care of synchronizing this state across all the users, so they can display it in their browser.  
-  In the case of Tic-Tac-Toe, this is the grid, with the `X` and the `O` inside it.  
-* The actions that a user can do on the state of the games. When a user wants to do an action, it sends it to the server where it is validated, and broadcasted to all the connected users so they can update their state of the game.     
+* The state of the game, which contains all the information. Ravens takes care of synchronizing this state across all the users, so they can display it in their browser.
+  In the case of Tic-Tac-Toe, this is the grid, with the `X` and the `O` inside it.
+* The actions that a user can do on the state of the games. When a user wants to do an action, it sends it to the server where it is validated, and broadcasted to all the connected users so they can update their state of the game.
   In the case of Tic-Tac-Toe, there is only one: fill the grid with a symbol.
 
 ### Initialization
 
-To define a game in Ravens, create a class extending `Game`: 
+To define a game in Ravens, create a class extending `Game`:
 
 ```javascript
-import { Game } from "@ravens-engine/core/lib/core/index.js"; 
+import { Game } from "@ravens-engine/core/lib/core/index.js";
 
-export default class TicTacToe extends Game {
+export default class TicTacToeGame extends Game {
 
 }
 ```
@@ -42,7 +43,7 @@ export default class TicTacToe extends Game {
 The first thing we need to define is the initial state of our game. In this example, it will be an empty 3-by-3 grid, represented by a two-dimensional array in Javascript. To achieve this, we define the `initialize` method of `Game`:
 
 ```javascript {2-12}
-export default class TicTacToe extends Game {
+export default class TicTacToeGame extends Game {
   initialize() {
     const emptyGrid = [
       [null, null, null],
@@ -84,13 +85,13 @@ export default class TicTacToe extends Game {
 
 ### Defining the actions
 
-Now that the state of our game is correctly initialized, we can define the actions that users can do. To handle them, we define the `processAction` method of `Game`:
+Now that the state of our game is correctly initialized, we can define the actions that users can do. To handle them, we define the `applyAction` method of `Game`:
 
 ```javascript {4-6}
-export default class TicTacToe extends Game {
+export default class TicTacToeGame extends Game {
   // ...
 
-  processAction(userId, action) {
+  applyAction(userId, action) {
 
   }
 }
@@ -111,10 +112,10 @@ This method receives two arguments:
   ```
   In this case, this action would corresponds to a user trying to fill the cell at coordinates `1, 2`.
 
-To handle the action of type `fill`, we can implement the logic in the method `processAction`:
+To handle the action of type `fill`, we can implement the logic in the method `applyAction`:
 
 ```javascript
-processAction(userId, action) {
+applyAction(userId, action) {
   if (action.type == "fill") {
     // Fill the grid with the new value
     this.state.grid[action.cell.y][action.cell.x] = this.state.turn;
@@ -127,14 +128,14 @@ processAction(userId, action) {
 
 #### Handling Invalid actions
 
-For now, our `processAction` method accepts any move sent by the users, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `processAction`. Ravens expect that we throw an `InvalidActionError` whenever `processAction` encounters an invalid move:
+For now, our `applyAction` method accepts any move sent by the users, but we should invalidate actions that try to fill an already-filled cell. Let's implement this in `applyAction`. Ravens expect that we throw an `InvalidActionError` whenever `applyAction` encounters an invalid move:
 
 ```javascript {7-10}
 import { Game, InvalidActionError } from "@ravens-engine/core/lib/core/index.js";
 
 // ...
 
-processAction(userId, action) {
+applyAction(userId, action) {
   if (action.type == "fill") {
     // Check if the cell has alrady been filled
     if (this.state.grid[action.cell.y][action.cell.x] != null) {
@@ -190,6 +191,7 @@ Then, create a file `src/TicTacToeComponent.jsx`, and fill the `render` function
 
 ```jsx
 import "./style.css";
+import * as React from "react";
 
 export default class TicTacTocComponent extends React.Component {
   render() {
@@ -197,18 +199,20 @@ export default class TicTacTocComponent extends React.Component {
     for (let y = 0;y < 3;y++) {
       const row = [];
 
-      for (let y = 0;y < 3;y++) {
+      for (let x = 0;x < 3;x++) {
         row.push(<td>{this.props.game.state.grid[y][x]}</td>);
       }
 
-      tableRows.push(<th>{row}</th>);
+      tableRows.push(<tr>{row}</tr>);
     }
 
     return (
       <div>
         <div>{this.props.game.state.turn}</div>
         <table>
-          {tableRows}
+          <tbody>
+            {tableRows}
+          </tbody>
         </table>
       </div>
     );
@@ -254,7 +258,7 @@ Finally, `src/server.js`:
 
 ```js
 import { Server } from "@ravens-engine/core/lib/server/index.js";
-import TicTacToeGame from "./TicTacToeGame";
+import TicTacToeGame from "./TicTacToeGame.js";
 
 const server = new Server({
     gameClass: TicTacToeGame
@@ -290,11 +294,11 @@ To launch the UI, run in an other terminal:
 parcel index.html
 ```
 
-You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the 
+You can now access the game by opening `http://localhost:8080`. You can click on the square to fill the
 
 ## Making it multiplayer
 
-At the moment, our game is a bit barebone:
+At the moment, our game is a bit bare-bones:
 
 * There's not concept of players yet as you can play the full game inside a single browser. We'll improve that by making the game truly multiplayer.
 * When a player wins the game, there's no message indicating who's the winner.
@@ -369,7 +373,7 @@ Let's now implement Tic-Tac-Toe using the phases we defined
 
 #### Modifying TicTacToeGame
 
-We'll first modify the class `TicTacToe` that we defined earlier. We'll remove parts that 
+We'll first modify the class `TicTacToe` that we defined earlier. We'll remove parts that
 
 ```js
 export default class TicTacToe extends Game {
@@ -388,14 +392,14 @@ export default class TicTacToe extends Game {
     this.setChild(LobbyPhase);
   }
 
-  // `processAction` has been removed
+  // `applyAction` has been removed
 }
 ```
 
 We did two things:
 
 * In `initialize`, a line was added to initialize the initial phase of our game, `LobbyPhase`.
-* `processAction` was removed since it's the child phases that will handle the actions.
+* `applyAction` was removed since it's the child phases that will handle the actions.
 
 #### Implementing LobbyPhase
 
@@ -431,6 +435,29 @@ Notice that:
 
 #### Implementing GameEndedPhase
 
+`GameEndedPhase` will be the final phase of the game. Its job is simple: track the winner so that it can be displayed in the UI.
+
+This phase will take a parameter during "initialization". In other words, this phase takes an argument whenever this phase is triggered via `this.parent.setChild(GameEndedPhase, ...)`.
+
+This parameter (`winner`) will be the 'X' or 'O' symbol corresponding to the winning player.
+
+```js
+export class GameEndedPhase extends Phase {
+    initialize(winner) {
+        this.state = {
+            winner
+        };
+    }
+}
+
+// ...
+```
+
+Notice that:
+
+* The `winner` is passed in to the phase via the `initialize()` parameter.
+* Phases can have their own internal state. For this phase, track the winner in the phase's state. This will be read by the UI code.
+
 #### Modifying the UI
 
 Now that we split our game into 3 phases, we can modify the UI:
@@ -440,7 +467,7 @@ export default class TicTacToeComponent extends React.Component {
     render() {
         return <>
             <div>
-                Player {this.props.client.userId} - 
+                Player {this.props.client.userId} -
                 {this.props.game.child instanceof LobbyPhase && (
                     <>Waiting for <b>{2 - this.props.game.players.length}</b> players</>
                 )}
