@@ -184,7 +184,7 @@ export default class TicTacTocComponent extends React.Component {
         row.push(<td>{this.props.game.state.grid[y][x]}</td>);
       }
 
-      tableRows.push(<th>{row}</th>);
+      tableRows.push(<tr>{row}</tr>);
     }
 
     return (
