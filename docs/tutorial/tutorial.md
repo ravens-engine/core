@@ -169,9 +169,28 @@ First, let's install the libraries that we will use:
 npm install react react-dom parcel-bundler
 ```
 
-Let's create a file `src/TicTacToeComponent.jsx`, and fill the `render` function with an UI for our game:
+Next, let's set up a simple style sheet to format the game's grid. Create `src/style.css` and add the following styling. This `.css` file will be imported by the React component that we define next.
+
+```css
+table {
+    text-align: center;
+}
+
+td {
+    border: 1px solid black;
+    height: 50px;
+    width: 50px;
+}
+
+td.clickable {
+    cursor: pointer;
+}
+```
+
+Then, create a file `src/TicTacToeComponent.jsx`, and fill the `render` function with an UI for our game:
 
 ```jsx
+import "./style.css";
 import * as React from "react";
 
 export default class TicTacTocComponent extends React.Component {
@@ -188,7 +207,7 @@ export default class TicTacTocComponent extends React.Component {
     }
 
     return (
-      <div style={{ display: 'flex', alignItems: 'center'}}>
+      <div>
         <div>{this.props.game.state.turn}</div>
         <table>
           <tbody>
