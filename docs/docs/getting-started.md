@@ -24,7 +24,7 @@ can be properly understood.
 
 ### Through the tutorial
 
-There is [a step-by-step tutorial](./tutorial) that guides you through the creation of a Tic Tac Toe using Ravens.
+There is [a step-by-step tutorial](../tutorial) that guides you through the creation of a Tic Tac Toe using Ravens.
 
 ### Through examples
 
